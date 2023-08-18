@@ -33,10 +33,11 @@ double kissat_process_time (void) {
 }
 
 uint64_t kissat_maximum_resident_set_size (void) {
-  struct rusage u;
-  if (getrusage (RUSAGE_SELF, &u))
-    return 0;
-  return ((uint64_t) u.ru_maxrss) << 10;
+  // struct rusage u;
+  // if (getrusage (RUSAGE_SELF, &u))
+  //   return 0;
+  // return ((uint64_t) u.ru_maxrss) << 10;
+  return 0;
 }
 
 #ifdef __APPLE__
@@ -56,6 +57,7 @@ uint64_t kissat_current_resident_set_size (void) {
 #else
 
 uint64_t kissat_current_resident_set_size (void) {
+  /*
   char path[48];
   sprintf (path, "/proc/%" PRIu64 "/statm", (uint64_t) getpid ());
   FILE *file = fopen (path, "r");
@@ -65,6 +67,8 @@ uint64_t kissat_current_resident_set_size (void) {
   int scanned = fscanf (file, "%" PRIu64 " %" PRIu64 "", &dummy, &rss);
   fclose (file);
   return scanned == 2 ? rss * sysconf (_SC_PAGESIZE) : 0;
+  */
+  return 0;
 }
 
 #endif

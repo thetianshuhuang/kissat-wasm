@@ -460,7 +460,7 @@ static bool parse_options (application *application, int argc,
         if (application->time > 0)
           ERROR ("multiple '--time=%d' and '%s'", application->time, arg);
         application->time = val;
-        alarm (val);
+        // alarm (val);
       } else
         ERROR ("invalid argument in '%s' (try '-h')", arg);
     } else if ((valstr = kissat_parse_option_name (arg, "conflicts"))) {
@@ -824,7 +824,7 @@ static int run_application (kissat *solver, int argc, char **argv,
 int kissat_application (kissat *solver, int argc, char **argv) {
   bool cancel_alarm;
   int res = run_application (solver, argc, argv, &cancel_alarm);
-  if (cancel_alarm)
-    alarm (0);
+  // if (cancel_alarm)
+  //   alarm (0);
   return res;
 }

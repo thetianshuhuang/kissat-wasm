@@ -1,11 +1,19 @@
-CC=@CC@
-LD=@LD@
-AR=@AR@
+CC=/opt/wasi-sdk/bin/clang
+CFLAGS=-D_WASI_EMULATED_SIGNAL -D_WASI_EMULATED_PROCESS_CLOCKS -O1
+LD=/opt/wasi-sdk/bin/wasm-ld
+LDFLAGS=-lwasi-emulated-signal
+LDFLAGS+= -L/opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasi \
+    /opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasi/crt1.o
+LDFLAGS+= --export=main --export=_start
+LDFLAGS+= --allow-undefined -lwasi-emulated-mman
+LDFLAGS+= -lc /opt/wasi-sdk/lib/clang/10.0.0/lib/wasi/libclang_rt.builtins-wasm32.a
+
+AR=/opt/wasi-sdk/bin/ar
 
 VPATH=../src:../test
 
 %.o: %.c ../[st]*/*.h makefile
-	$(CC) -c $<
+	$(CC) $(CFLAGS) -c $<
 
 APPSRC=application.c handle.c parse.c witness.c
 
@@ -46,10 +54,10 @@ format:
 	clang-format -i ../*/*.[ch]
 
 kissat: main.o $(APPOBJ) libkissat.a makefile
-	$(LD) -o $@ main.o $(APPOBJ) $(LIBS) -lm
+	$(LD) $(LDFLAGS) -o $@ main.o $(APPOBJ) $(LIBS) -lm
 
 tissat: test.o $(TSTOBJ) libkissat.a makefile
-	$(LD) -o $@ test.o $(TSTOBJ) $(LIBS) -lm
+	$(LD) $(LDFLAGS) -o $@ test.o $(TSTOBJ) $(LIBS) -lm
 
 kitten: kitten.c random.h stack.h makefile
 	$(CC) $(CFLAGS) -DSTAND_ALONE_KITTEN -o $@ ../src/kitten.c
@@ -66,18 +74,18 @@ propsearch.o: assign.c
 watch.o: sort.c
 
 build.o: build.c build.h ../[st]*/*.h makefile
-	$(CC) $(INCLUDES) -c $<
+	$(CC) $(CFLAGS) $(INCLUDES) -c $<
 
 testkitten.o: testkitten.c ../[st]*/*.h makefile
-	$(CC)@KITTEN@ -c $<
+	$(CC) $(CFLAGS) @KITTEN@ -c $<
 
 test.o: test.c build.h ../[st]*/*.h makefile
-	$(CC) $(INCLUDES) -c $<
+	$(CC) $(CFLAGS) $(INCLUDES) -c $<
 
 libkissat.a: $(LIBOBJ) makefile
 	$(AR) rc $@ $(LIBOBJ)
 
 libkissat.so: $(LIBOBJ) makefile
-	$(LD) -shared -o $@ $(LIBOBJ)
+	$(LD) $(LDFLAGS) -shared -o $@ $(LIBOBJ)
 
 .PHONY: all clean coverage indent test build.h

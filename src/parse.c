@@ -8,7 +8,7 @@
 #include <ctype.h>
 #include <inttypes.h>
 
-#define size_buffer (1u << 20)
+#define size_buffer (1u << 16)
 
 struct read_buffer {
   unsigned char chars[size_buffer];
@@ -72,6 +72,7 @@ parse_dimacs (kissat * solver, file * file,
 {
   read_buffer buffer;
   buffer.pos = buffer.end = 0;
+
   uint64_t lineno = *lineno_ptr = 1;
   bool first = true;
   int ch;

@@ -51,6 +51,9 @@ int main (int argc, char **argv) {
   ignore_alarm = true;
   kissat_reset_alarm ();
   kissat_release (solver);
+
+  return 0;
+
 #ifndef NDEBUG
   if (!res)
     return dump (0);
